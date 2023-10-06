@@ -1,3 +1,4 @@
+// ignore: file_names
 
 
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 class TodoDetailsPage extends StatelessWidget {
   final Map<String, dynamic> todo;
 
-  TodoDetailsPage({required this.todo});
+  const TodoDetailsPage({super.key, required this.todo});
 
   @override
   Widget build(BuildContext context) {

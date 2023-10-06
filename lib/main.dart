@@ -6,6 +6,29 @@ void main() {
   runApp(const MyApp());
 }
 
+class Todo {
+  final int id;
+  final int userId;
+  final String title;
+  final bool completed;
+
+  Todo({
+    required this.id,
+    required this.userId,
+    required this.title,
+    required this.completed,
+  });
+
+  factory Todo.fromJson(Map<String, dynamic> json) {
+    return Todo(
+      id: json['id'],
+      userId: json['userId'],
+      title: json['title'],
+      completed: json['completed'],
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key});
 
@@ -30,7 +53,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Map<String, dynamic>> todos = [];
+  List<Todo> todos = [];
   int currentPage = 1;
   int pageSize = 10; // Number of todos to load per page
 
@@ -47,9 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      var responseList = jsonDecode(response.body);
+      var responseList = jsonDecode(response.body) as List<dynamic>;
       setState(() {
-        todos.addAll(responseList.cast<Map<String, dynamic>>());
+        todos.addAll(
+          responseList.map((json) => Todo.fromJson(json)).toList(),
+        );
       });
     } else {
       setState(() {
@@ -90,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               },
-              title: Text('Todo ${todo['id']}', style:const TextStyle(color: Colors.black) ,),
+              title: Text('Todo ${todo.id}', style: const TextStyle(color: Colors.black)),
             );
           }
         },
@@ -100,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class TodoDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> todo;
+  final Todo todo;
 
   TodoDetailsPage({required this.todo});
 
@@ -116,12 +141,12 @@ class TodoDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Title: ${todo['title']}',
+              'Title: ${todo.title}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text('ID: ${todo['id']}'),
-            Text('User ID: ${todo['userId']}'),
-            Text('Completed: ${todo['completed'] ? 'Yes' : 'No'}'),
+            Text('ID: ${todo.id}'),
+            Text('User ID: ${todo.userId}'),
+            Text('Completed: ${todo.completed ? 'Yes' : 'No'}'),
           ],
         ),
       ),
